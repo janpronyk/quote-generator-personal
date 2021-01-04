@@ -11,13 +11,18 @@ window.addEventListener('load', function() {
     const loader = document.getElementById('loader');
 
 
-    function showLoadingSpinner() {
-        loader.hidden = false;
-        quoteContainer.hidden = true;
+    function resetQuoteContainerToDefault()
+    {
         quoteTextContainer.hidden = false;
         errorTextContainer.hidden = true
         twitterButton.hidden = false;
         buttonContainer.classList.remove('single-button-layout')
+        newQuoteButton.innerText = 'Try New Quote'
+    }
+
+    function showLoadingSpinner() {
+        loader.hidden = false;
+        quoteContainer.hidden = true;
     }
 
     function removeLoadingSpinner() {
@@ -32,12 +37,15 @@ window.addEventListener('load', function() {
         errorTextContainer.hidden = false;
         twitterButton.hidden = true;
         buttonContainer.classList.add('single-button-layout')
+        newQuoteButton.innerText = 'Try Again'
     }
 
 
     async function getQuoteFromAPI() {
 
         showLoadingSpinner();
+
+        resetQuoteContainerToDefault();
         
         const proxyURL = 'https://cors-anywhere.herokuapp.com/';
         const apiURL = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
@@ -65,8 +73,6 @@ window.addEventListener('load', function() {
             removeLoadingSpinner();
 
             showErrorMessage();
-
-            return
         
         }
 
