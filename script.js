@@ -5,18 +5,50 @@ window.addEventListener('load', function() {
     const author = document.getElementById('author');
     const twitterButton = document.getElementById('twitterButton');
     const newQuoteButton = document.getElementById('new-quote-button');
-    
-    // Get quote from API
-    async function getQuote() {
-        const proxyURL = 'https://cors-anywhere.herokuapp.com/'
+    const quoteTextContainer = document.getElementById('quote-text-container')
+    const errorTextContainer = document.getElementById('error-text-container')
+    const buttonContainer = document.getElementById('button-container')
+    const loader = document.getElementById('loader');
+
+
+    function showLoadingSpinner() {
+        loader.hidden = false;
+        quoteContainer.hidden = true;
+        quoteTextContainer.hidden = false;
+        errorTextContainer.hidden = true
+        twitterButton.hidden = false;
+        buttonContainer.classList.remove('single-button-layout')
+    }
+
+    function removeLoadingSpinner() {
+        if (!loader.hidden) {
+            quoteContainer.hidden = false;
+            loader.hidden = true;
+        }
+    }
+
+    function showErrorMessage() {
+        quoteTextContainer.hidden = true;
+        errorTextContainer.hidden = false;
+        twitterButton.hidden = true;
+        buttonContainer.classList.add('single-button-layout')
+    }
+
+
+    async function getQuoteFromAPI() {
+
+        showLoadingSpinner();
+        
+        const proxyURL = 'https://cors-anywhere.herokuapp.com/';
         const apiURL = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
+
         try {
             
             const response = await fetch(proxyURL + apiURL);
             const data = await response.json();
 
             // If author is blank set text as 'Unknown'
-            data.quoteAuthor === '' ? author.innerText = 'Unknown' : author.innerText = data.quoteQuthor;
+            data.quoteAuthor === '' ? author.innerText = 'Unknown' : author.innerText = data.quoteAuthor;
             
             // Reduce font size for long quotes
             data.quoteText.length > 50 ? quote.classList.add('long-quote') : quote.classList.remove('long-cuote');
@@ -26,9 +58,15 @@ window.addEventListener('load', function() {
 
             console.log(data);
 
+            removeLoadingSpinner();
+
         } catch (error) {
 
-            // getQuote();
+            removeLoadingSpinner();
+
+            showErrorMessage();
+
+            return
         
         }
 
@@ -48,14 +86,13 @@ window.addEventListener('load', function() {
 
 
     // Event Listeners
-    newQuoteButton.addEventListener('click', getQuote);
+    newQuoteButton.addEventListener('click', getQuoteFromAPI);
 
     twitterButton.addEventListener('click', tweetQuote);
 
 
     // On Load
-    getQuote();
+    getQuoteFromAPI();
 
 
-
-})
+});
